@@ -314,7 +314,8 @@ footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-
     <div id="qrBox"></div>
     <div class="qr-u" id="qrUrl"></div>
     <div class="qr-acts">
-      <button class="pill" id="qrShare">分享 QR 與網址</button>
+      <button class="pill" id="qrLine">傳網址到 LINE</button>
+      <button class="pill" id="qrShare">分享 QR 圖片</button>
       <button class="pill" id="qrCopy">複製網址</button>
       <button class="pill" id="qrClose">關閉</button>
     </div>
@@ -635,6 +636,11 @@ $('qrBtn').onclick=openQr;
 $('qrClose').onclick=()=>{ $('qrSheet').hidden=true; document.body.style.overflow=''; };
 $('qrSheet').addEventListener('click',e=>{ if(e.target===$('qrSheet')) $('qrClose').onclick(); });
 $('qrCopy').onclick=()=>{ const b=$('qrCopy'); const ok=()=>{b.textContent='已複製';b.classList.add('done');setTimeout(()=>{b.textContent='複製網址';b.classList.remove('done');},1600);}; if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(APP_URL).then(ok).catch(()=>fb(APP_URL,ok)); else fb(APP_URL,ok); };
+$('qrLine').onclick=()=>{
+  const text='超固 SPC 卡扣式地板快速試算｜三川工方\n'+APP_URL;
+  // 直接開 LINE 選擇分享對象
+  window.location.href='https://line.me/R/share?text='+encodeURIComponent(text);
+};
 $('qrShare').onclick=async()=>{
   const b=$('qrShare'); const old=b.textContent; b.textContent='產生中…'; b.disabled=true;
   try{
