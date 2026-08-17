@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f0eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>超固地板代工計價｜三川工方</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.7.0/style.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/chiron-sung-hk-webfont@1.011/ChironSungHK.css" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2f0eb; --ink:#23211d; --hair:#dcd7cd; --card:#f8f7f4;
+  --clay:#d0785e; --sub:#7a574a; --body:#5a3b32;
+  --green:#2f6b4f; --green2:#e6efe8; --mute:#a09789;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"LXGW WenKai TC","霞鶩文楷 TC",system-ui,sans-serif;font-size:16px;line-height:1.6;padding-bottom:160px}
+.num{font-family:"Outfit",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.money{color:var(--green)}
+.wrap{max-width:560px;margin:0 auto;padding:0 20px}
+header{padding:34px 0 22px;text-align:center}
+header h1{margin:0;font-weight:400;font-size:23px;letter-spacing:.22em;text-indent:.22em}
+header .rule{height:1px;background:var(--hair);margin:16px 0 14px}
+header .sign{font-family:"Chiron Sung HK","LXGW WenKai TC",serif;font-weight:900;font-size:17px;letter-spacing:.34em;text-indent:.34em;transform:scaleY(.9);display:inline-block;color:var(--sub)}
+header .en{display:block;margin-top:9px;font-family:"Outfit",sans-serif;font-weight:300;font-size:10px;letter-spacing:.34em;text-indent:.34em;color:var(--mute);text-transform:uppercase}
+header .tag{margin-top:12px;font-size:11.5px;letter-spacing:.14em;color:var(--body)}
+section{margin:0 0 28px}
+.lab{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+.lab b{font-weight:700;font-size:14px;letter-spacing:.14em;color:var(--sub)}
+.lab i{flex:1;height:1px;background:var(--hair)}
+.lab s{text-decoration:none;font-family:"Outfit",sans-serif;font-size:10px;letter-spacing:.22em;color:#b0a89a;text-transform:uppercase}
+input,select{font-family:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--hair);border-radius:2px;padding:11px 12px;width:100%;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{border-color:var(--clay)}
+input.n{font-family:"Outfit",sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09789'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
+/* rows */
+.area{margin-bottom:8px}
+.dims{display:none;gap:6px;align-items:center;padding:6px 0 2px 0;font-size:12px;color:var(--mute)}
+.area.dm .dims{display:flex}
+.dims input{width:74px;padding:8px 9px;font-size:14px}
+.dims b{margin-left:auto;font-family:"Outfit",sans-serif;font-weight:400;color:var(--body)}
+.dimb{flex:none;width:30px;height:32px;border:1px solid var(--hair);background:var(--card);border-radius:2px;color:var(--mute);font-size:12px;cursor:pointer;font-family:inherit;padding:0}
+.area.dm .dimb{border-color:var(--clay);color:var(--clay)}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.row .nm{flex:1;min-width:0}
+.row .ping{width:76px;flex:none}
+.row .lv{width:74px;flex:none;font-size:13px;padding-left:8px}
+.del{flex:none;width:24px;height:32px;border:none;background:none;color:#bdb5a7;font-size:20px;cursor:pointer;line-height:1;padding:0}
+.del:hover{color:var(--clay)}
+.addrow{width:100%;margin-top:6px;padding:10px;background:none;cursor:pointer;border:1px dashed var(--hair);border-radius:2px;color:var(--sub);font-family:inherit;font-size:14px;letter-spacing:.1em}
+.addrow:hover{border-color:var(--clay)}
+.sum{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px solid var(--hair)}
+.sum span{font-size:13px;letter-spacing:.14em;color:var(--body)}
+.sum b{font-family:"Outfit",sans-serif;font-weight:500;font-size:26px}
+.sum b em{font-style:normal;font-size:13px;color:var(--body);margin-left:5px;font-family:inherit}
+/* chips */
+.chips{display:flex;gap:8px}
+.chip{flex:1;padding:12px 6px;background:var(--card);border:1px solid var(--hair);border-radius:2px;cursor:pointer;font-family:inherit;color:var(--ink);text-align:center;transition:all .15s;position:relative;overflow:hidden}
+.chip::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:transparent;transition:background .15s}
+.chip.on{border-color:var(--clay);background:#fbf7f4}
+.chip.on::before{background:var(--clay)}
+.chip strong{display:block;font-family:"Outfit",sans-serif;font-weight:500;font-size:16px;letter-spacing:.02em}
+.chip small{display:block;font-size:11px;color:var(--mute);margin-top:1px}
+.chip small b{color:var(--green);font-family:"Outfit",sans-serif;font-weight:500;font-size:13px}
+/* tier cards */
+.tiers{display:flex;flex-direction:column;gap:8px}
+.tier{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px 12px 16px;background:var(--card);border:1px solid var(--hair);border-radius:2px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);width:100%;transition:all .15s}
+.tier::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;transition:background .15s}
+.tier.on{border-color:var(--clay);background:#fbf7f4}
+.tier.on::before{background:var(--clay)}
+.tier .no{flex:none;font-family:"Outfit",sans-serif;font-weight:300;font-size:26px;color:#c9c1b3;width:22px;text-align:center;line-height:1}
+.tier.on .no{color:var(--clay)}
+.tier .t{flex:1;min-width:0}
+.tier .t strong{display:block;font-weight:700;font-size:15px;letter-spacing:.04em}
+.tier .t small{display:block;font-size:12px;color:var(--body);line-height:1.5;margin-top:1px}
+.tier .p{flex:none;font-family:"Outfit",sans-serif;font-weight:500;font-size:20px;color:var(--green)}
+.tier .p em{font-style:normal;font-size:11px;color:var(--mute);margin-left:3px;font-family:inherit}
+.hint{margin:10px 0 0;font-size:12px;color:var(--mute);letter-spacing:.04em;line-height:1.6}
+/* fields */
+.fields{display:flex;flex-direction:column;gap:12px}
+.f{display:flex;align-items:center;gap:12px}
+.f label{flex:1;font-size:14px;color:var(--body);letter-spacing:.06em}
+.f label small{display:block;font-size:11px;color:var(--mute);letter-spacing:.02em}
+.f .in{width:136px;flex:none;position:relative}
+.f .in input{padding-right:46px}
+.f .in u{position:absolute;right:11px;top:50%;transform:translateY(-50%);text-decoration:none;font-size:11px;color:var(--mute);pointer-events:none}
+/* addon items */
+.items{display:flex;flex-direction:column;gap:6px}
+.item{background:var(--card);border:1px solid var(--hair);border-radius:2px;transition:border-color .15s}
+.item.on{border-color:#cfc6b8}
+.item .hd{display:flex;align-items:center;gap:12px;padding:11px 12px 11px 12px;cursor:pointer;user-select:none}
+.item .cb{flex:none;width:20px;height:20px;border:1.5px solid #c9c1b3;border-radius:2px;position:relative;background:#fff;transition:all .15s}
+.item.on .cb{background:var(--clay);border-color:var(--clay)}
+.item.on .cb::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.item .nm{flex:1;min-width:0}
+.item .nm strong{display:block;font-weight:700;font-size:14.5px;letter-spacing:.04em}
+.item .nm small{display:block;font-size:11.5px;color:var(--mute);line-height:1.5}
+.item .rate{flex:none;font-family:"Outfit",sans-serif;font-size:14px;color:var(--body);text-align:right;line-height:1.3}
+.item .rate em{font-style:normal;font-size:10.5px;color:var(--mute);display:block;font-family:inherit}
+.item .amt{flex:none;font-family:"Outfit",sans-serif;font-weight:500;font-size:16px;color:var(--green);min-width:70px;text-align:right;display:none}
+.item.on .amt{display:block}
+.item.on .rate{display:none}
+.item .bd{display:none;padding:0 12px 12px 44px;border-top:1px dashed var(--hair);margin-top:-1px;padding-top:11px}
+.item.on .bd{display:flex;flex-direction:column;gap:9px}
+.item .bd .f label{font-size:13px}
+.item .bd .f .in{width:120px}
+/* result */
+.res{border:1px solid var(--hair);background:var(--card)}
+.res .ln{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 14px;border-bottom:1px solid #ebe7df;font-size:14px}
+.res .ln:last-child{border-bottom:none}
+.res .ln span{color:var(--body);min-width:0}
+.res .ln span small{color:var(--mute);font-size:11.5px;margin-left:6px;font-family:"Outfit",sans-serif}
+.res .ln b{font-family:"Outfit",sans-serif;font-weight:500;color:var(--green);white-space:nowrap}
+.res .ln.sub{background:#f2f0eb;font-size:13px}
+.res .ln.sub b{color:var(--ink)}
+.res .ln.tot{background:var(--green2);padding:13px 14px}
+.res .ln.tot span{color:var(--ink);font-weight:700;letter-spacing:.14em}
+.res .ln.tot b{font-size:20px}
+.res .ln.warn{background:#fbf7f4;font-size:12.5px}
+.res .ln.warn span{color:var(--sub)}
+.res .ln.warn b{color:var(--sub);font-size:12.5px}
+.res .empty{padding:18px 14px;text-align:center;color:var(--mute);font-size:13px}
+/* material */
+.mat{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:14px;background:var(--hair);border:1px solid var(--hair)}
+.mat div{flex:1;background:var(--card);padding:13px 8px;text-align:center}
+.mat span{display:block;font-size:11px;letter-spacing:.14em;color:var(--mute)}
+.mat b{display:block;margin-top:5px;font-family:"Outfit",sans-serif;font-weight:500;font-size:22px;color:var(--green)}
+.mat b em{font-style:normal;font-size:12px;color:var(--body);margin-left:3px;font-family:inherit}
+.note{margin:12px 0 0;padding:11px 13px;background:#efece5;border-left:3px solid var(--hair);font-size:12.5px;line-height:1.7;color:var(--body)}
+.note b{color:var(--sub)}
+/* bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(242,240,235,.97);backdrop-filter:blur(8px);border-top:1px solid var(--hair);padding:12px 20px calc(12px + env(safe-area-inset-bottom));z-index:20}
+.bar .in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar .l{flex:1;min-width:0;border-left:4px solid var(--green);padding-left:12px}
+.bar .l span{display:block;font-size:11px;letter-spacing:.2em;color:var(--sub)}
+.bar .l b{display:block;font-family:"Outfit",sans-serif;font-weight:500;font-size:31px;line-height:1.2;color:var(--green);white-space:nowrap}
+.bar .l b i{font-style:normal;font-size:15px;color:var(--body);margin-right:4px}
+.bar .l u{display:block;text-decoration:none;font-size:11.5px;color:var(--body);font-family:"Outfit",sans-serif;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.copy{flex:none;padding:13px 17px;background:var(--green);color:#f3f6f2;border:none;border-radius:2px;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.14em;cursor:pointer;transition:background .15s}
+.copy:hover{background:#255840}
+.copy.done{background:#7a574a}
+.copy.share{background:#06c755;padding:11px 14px}
+.copy.share:hover{background:#05b04c}
+.reset{display:block;margin:6px auto 0;background:none;border:none;color:var(--mute);font-family:inherit;font-size:12px;letter-spacing:.14em;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-spacing:.16em;line-height:1.8}
+@media (min-width:600px){header{padding-top:48px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>超固地板代工計價</h1>
+    <div class="rule"></div>
+    <div class="sign">三川工方</div>
+    <span class="en">SPC Click-Lock · Contract Labour Estimate</span>
+    <div class="tag">純施工工資　未稅　臺北市起算　材料由發包單位提供</div>
+  </header>
+
+  <section>
+    <div class="lab"><b>案件資料</b><i></i><s>Project</s></div>
+    <div class="fields">
+      <input type="text" id="caseName" placeholder="案件名稱（例：林口王宅）">
+      <input type="text" id="caseAddr" placeholder="施工地址">
+    </div>
+  </section>
+
+  <section>
+    <div class="lab"><b>施作面積與格局</b><i></i><s>Area · Level</s></div>
+    <div id="rows"></div>
+    <button class="addrow" id="addRow">＋ 新增區域</button>
+    <p class="hint">同一案場可分區判定格局等級；每列右側可個別選等級。按「尺」可改輸入長×寬（公尺），自動換算坪數與周長。</p>
+    <div class="sum"><span>合計坪數</span><b class="num"><span id="totalPing">0</span><em>坪</em></b></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>空間條件</b><i></i><s>Rooms · Doors</s></div>
+    <div class="fields">
+      <div class="f"><label>房間／空間數<small>起步條依此預估</small></label><div class="in"><input class="n" type="number" inputmode="numeric" id="rooms" value="1"><u>間</u></div></div>
+      <div class="f"><label>門洞數<small>分隔條依此預估</small></label><div class="in"><input class="n" type="number" inputmode="numeric" id="doors" value="1"><u>處</u></div></div>
+      <div class="f"><label>收邊周長<small id="perimHint">依坪數與空間數自動預估，可改</small></label><div class="in"><input class="n" type="number" inputmode="decimal" id="perim" placeholder="0"><u>公尺</u></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="lab"><b>地板厚度</b><i></i><s>Thickness</s></div>
+    <div class="chips" id="thick"></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>格局等級參考</b><i></i><s>Layout Level</s></div>
+    <div class="tiers" id="tiers"></div>
+    <p class="hint">點選等級 → 套用到全部區域。</p>
+  </section>
+
+  <section>
+    <div class="lab"><b>特殊拼法與現場追加</b><i></i><s>Add-ons</s></div>
+    <div class="items" id="addons"></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>相關施工工項</b><i></i><s>Related Works</s></div>
+    <div class="items" id="works"></div>
+    <p class="hint">以上以格局等級 1 為基本價，依格局及難度可調整單價。</p>
+  </section>
+
+  <section>
+    <div class="lab"><b>跨縣市施工</b><i></i><s>Travel</s></div>
+    <div class="items" id="travel"></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>稅金</b><i></i><s>Tax</s></div>
+    <div class="chips" id="taxc"></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>計算結果</b><i></i><s>Summary</s></div>
+    <div class="res" id="res"></div>
+  </section>
+
+  <section>
+    <div class="lab"><b>材料備料換算</b><i></i><s>Material Reference</s></div>
+    <div class="fields">
+      <div class="f"><label>地板料價<small>發包單位料價</small></label><div class="in"><input class="n" type="number" inputmode="decimal" id="matPrice" placeholder="0"><u>元/坪</u></div></div>
+      <div class="f"><label>每箱坪數<small>超固地板 1.34m²／6片＝0.405坪</small></label><div class="in"><input class="n" type="number" inputmode="decimal" step="0.001" id="perBox" value="0.405"><u>坪</u></div></div>
+      <div class="f"><label>損耗率<small id="wasteHint">依各區等級自動計：等級1 8%，每升一級 +3%</small></label><div class="in"><input class="n" type="number" inputmode="decimal" id="waste" value="0" placeholder="0" style="color:var(--mute)" readonly><u>%</u></div></div>
+      <div class="f"><label>額外加計損耗<small>人字拼或特殊情況再加</small></label><div class="in"><input class="n" type="number" inputmode="decimal" id="wasteExtra" value="0"><u>%</u></div></div>
+      <div class="f"><label>矽利康每支可施打</label><div class="in"><input class="n" type="number" inputmode="decimal" id="tubeM" value="8"><u>m/支</u></div></div>
+    </div>
+    <div class="mat">
+      <div><span>含損耗坪數</span><b><span id="wastePing">0</span><em>坪</em></b></div>
+      <div><span>地板箱數</span><b><span id="boxes">—</span><em>箱</em></b></div>
+      <div><span>矽利康</span><b><span id="tubes">—</span><em>支</em></b></div>
+      <div><span>起步條</span><b><span id="startN">—</span><em>處</em></b></div>
+      <div><span>分隔條</span><b><span id="divN">—</span><em>處</em></b></div>
+      <div><span>材料金額</span><b><span id="matTotal">—</span></b></div>
+    </div>
+    <p class="note">材料由發包單位提供，<b>不計入代工費</b>；此區供發包單位備料與對帳參考。矽利康、起步條、分隔條數量依空間條件預估，現場以實際為準。</p>
+  </section>
+
+  <button class="reset" id="resetBtn">清空重算</button>
+  <footer>三川工方｜對合富國際代工計價專用<br>依《超固地板 SPC 地板代工施工計價標準》</footer>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="l"><span id="barLab">代工費（未稅）</span><b class="num"><i>NT$</i><span id="grand">0</span></b><u id="detail">請輸入坪數</u></div>
+  <button class="copy" id="copyBtn">複製</button>
+  <button class="copy share" id="shareBtn" title="傳送到 LINE"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px"><path d="M12 2C6.5 2 2 5.7 2 10.2c0 4 3.6 7.4 8.4 8.1.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.8-3.4 7.9-5.9C21.4 13.6 22 12 22 10.2 22 5.7 17.5 2 12 2z"/></svg></button>
+</div></div>
+
+<script>
+/* ═══ 計價設定：調價改這裡 ═══ */
+const THICK = [
+  {k:'a', label:'5.5–7 mm',  price:600},
+  {k:'b', label:'7.5–9 mm',  price:650},
+  {k:'c', label:'9.5–12 mm', price:700}
+];
+const LEVELS = [
+  {n:1, name:'單一空間・方正',     desc:'大面積、連續鋪設',            add:0},
+  {n:2, name:'多空間分區',         desc:'房間多、門洞多',              add:50},
+  {n:3, name:'牆線歪斜',           desc:'需測角斜切、反覆試裝',        add:100},
+  {n:4, name:'柱位・凹槽・轉折多', desc:'分段裁切、小塊餘料多',        add:150},
+  {n:5, name:'弧形・不規則',       desc:'現場取形、每片獨立丈量',      add:300}
+];
+const MIN_LABOR = 8000;    // 每案最低出工工資
+const REMOTE_RATE = 500;   // 元/小時
+const REMOTE_PCT  = 0.5;
+const LODGE_RATE  = 600;   // 元/人/日
+const CLEAN_MIN   = 2500;
+const WASTE_BASE  = 8;     // 等級1 損耗 %
+const WASTE_STEP  = 3;     // 每升一級 +%
+const wasteOf = lv => WASTE_BASE + (lv-1)*WASTE_STEP;
+
+/* 加項定義：qty 欄位 + 單價欄位；autoPing = 預設帶入總坪數 */
+const ADDONS = [
+  {k:'herr', name:'人字拼加工', sub:'重建基準線、反覆校正、裁切對縫增加',   unit:'坪',   qLab:'施作坪數', autoPing:true,  price:1200},
+  {k:'sili', name:'矽利康收邊', sub:'貼／拆紙膠帶、施打、修整（矽利康由發包方供）', unit:'公尺', qLab:'預估長度', autoPing:false, price:80, hint:'30坪住宅約 80 公尺', autoM:true},
+  {k:'start',name:'起步條安裝', sub:'',                                     unit:'處',   qLab:'數量',     price:200},
+  {k:'div',  name:'分隔條安裝', sub:'',                                     unit:'門洞', qLab:'門洞數',   price:200},
+  {k:'door', name:'門片高度修改', sub:'拆下、完工後丈量、裁切、重裝、調整', unit:'片',   qLab:'門片數',   price:1200},
+  {k:'carry',name:'現場搬工',   sub:'依搬運距離、電梯、樓層、動線評估',     unit:'人工', qLab:'人×工',    price:3000, excludeMin:true},
+  {k:'level',name:'補土及地坪整平', sub:'依高低差、範圍、厚度一式報價',     unit:'式',   qLab:'一式金額', lump:true}
+];
+const WORKS = [
+  {k:'rub',  name:'黑色橡膠底料', sub:'每片約 100×100cm；接縫膠帶施工方備',   unit:'坪', qLab:'施作坪數', autoPing:true, price:300,  from:true},
+  {k:'moist',name:'防潮布平鋪',   sub:'平鋪不折上牆',                         unit:'坪', qLab:'施作坪數', autoPing:true, price:100,  from:true},
+  {k:'ply',  name:'夾板全面平鋪', sub:'夾板及固定材由發包方供',               unit:'坪', qLab:'施作坪數', autoPing:true, price:800,  from:true},
+  {k:'raise',name:'架高地板',     sub:'完成面 20cm 內；角材夾板五金由發包方供',unit:'坪', qLab:'施作坪數', autoPing:true, price:3200, from:true},
+  {k:'clean',name:'施工餘料清運', sub:'最低 2,500／案；舊地板拆除另計',        unit:'坪', qLab:'施作坪數', autoPing:true, price:120,  from:true, excludeMin:true, min:CLEAN_MIN}
+];
+const TRAVEL = [
+  {k:'remote', name:'遠程津貼', sub:'單程時數 × 500 × 50% × 人數 × 趟數', custom:'remote', excludeMin:true},
+  {k:'lodge',  name:'外宿生活津貼', sub:'600／人／日含餐；房費由發包方安排負擔', custom:'lodge', excludeMin:true},
+  {k:'trans',  name:'油資・過路費・停車費', sub:'依實際發生列計', unit:'式', qLab:'實報金額', lump:true, excludeMin:true}
+];
+/* ═══ 設定結束 ═══ */
+
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const f2 = n => (Math.round(n*100)/100).toLocaleString('en-US',{maximumFractionDigits:2});
+const val = el => parseFloat(el.value) || 0;
+let thick = 'c', tax = 0, defLevel = 1;
+const state = {}; // k -> {on, els}
+
+/* 區域列 */
+const rowsEl = $('rows');
+const M2 = 3.30579; // 1坪 = 3.30579 m²
+function addRow(name='', ping='', lv){
+  const d = document.createElement('div'); d.className = 'area';
+  d.innerHTML = '<div class="row"><input class="nm" type="text" placeholder="區域" value="'+name+'">'
+    + '<input class="n ping" type="number" inputmode="decimal" step="0.01" placeholder="坪" value="'+ping+'">'
+    + '<select class="lv">' + LEVELS.map(l=>'<option value="'+l.n+'"'+((lv||defLevel)===l.n?' selected':'')+'>等級'+l.n+'</option>').join('') + '</select>'
+    + '<button class="dimb" title="輸入長寬">尺</button><button class="del" title="刪除">×</button></div>'
+    + '<div class="dims">長 <input class="n L" type="number" inputmode="decimal" step="0.01" placeholder="m"> × 寬 <input class="n W" type="number" inputmode="decimal" step="0.01" placeholder="m"><b class="pm"></b></div>';
+  d.querySelector('.del').onclick = () => { if (rowsEl.children.length>1) d.remove(); else d.querySelectorAll('input').forEach(i=>i.value=''); calc(); };
+  d.querySelector('.dimb').onclick = () => { d.classList.toggle('dm'); if (d.classList.contains('dm')) setTimeout(()=>d.querySelector('.L').focus(),50); };
+  const L=d.querySelector('.L'), W=d.querySelector('.W'), P=d.querySelector('.ping');
+  [L,W].forEach(i=>i.addEventListener('input',()=>{ const l=val(L),w=val(W); if(l>0&&w>0){ P.value=(l*w/M2).toFixed(2); d.querySelector('.pm').textContent='周長 '+f2(2*(l+w))+' m'; } calc(); }));
+  d.querySelectorAll('input,select').forEach(i => { i.addEventListener('input', calc); i.addEventListener('change', calc); });
+  rowsEl.appendChild(d);
+}
+$('addRow').onclick = () => { addRow(); calc(); };
+function areas(){
+  return [...rowsEl.children].map(r => {
+    const l=val(r.querySelector('.L')), w=val(r.querySelector('.W'));
+    return { name: r.querySelector('.nm').value.trim(), ping: val(r.querySelector('.ping')), lv: parseInt(r.querySelector('.lv').value), perim: (l>0&&w>0)?2*(l+w):0 };
+  }).filter(a => a.ping > 0);
+}
+/* 周長預估：有長寬用實測；否則每區以 4×√面積×1.1 估 */
+function estPerim(){
+  const list = areas(); if(!list.length) return 0;
+  const rooms = Math.max(1, Math.round(val($('rooms'))));
+  const measured = list.filter(a=>a.perim>0).reduce((s,a)=>s+a.perim,0);
+  const unmeasured = list.filter(a=>!a.perim);
+  if(!unmeasured.length) return measured;
+  const upPing = unmeasured.reduce((s,a)=>s+a.ping,0);
+  // 未量測部分依房間數平均分配
+  const share = rooms * (upPing/(list.reduce((s,a)=>s+a.ping,0)));
+  const n = Math.max(1, Math.round(share));
+  const each = upPing/n*M2;
+  return measured + n*4*Math.sqrt(each)*1.1;
+}
+$('perim').addEventListener('input',()=>{ $('perim').dataset.manual='1'; $('perimHint').textContent='手動輸入'; calc(); });
+$('rooms').addEventListener('input',()=>{ if(!$('doors').dataset.manual) $('doors').value=Math.round(val($('rooms'))); calc(); });
+$('doors').addEventListener('input',()=>{ $('doors').dataset.manual='1'; calc(); });
+
+/* 厚度 chips */
+THICK.forEach(t => {
+  const b = document.createElement('button'); b.className='chip'+(t.k===thick?' on':'');
+  b.innerHTML = '<strong>'+t.label+'</strong><small><b>'+t.price+'</b> 元/坪</small>';
+  b.onclick = () => { thick=t.k; [...$('thick').children].forEach(c=>c.classList.remove('on')); b.classList.add('on'); calc(); };
+  $('thick').appendChild(b);
+});
+/* 稅 chips */
+[{v:0,l:'未稅',s:'預設'},{v:5,l:'外加 5%',s:'開立發票'}].forEach(t => {
+  const b = document.createElement('button'); b.className='chip'+(t.v===tax?' on':'');
+  b.innerHTML = '<strong style="font-family:inherit;font-size:15px">'+t.l+'</strong><small>'+t.s+'</small>';
+  b.onclick = () => { tax=t.v; [...$('taxc').children].forEach(c=>c.classList.remove('on')); b.classList.add('on'); calc(); };
+  $('taxc').appendChild(b);
+});
+/* 等級卡 */
+LEVELS.forEach(l => {
+  const b = document.createElement('button'); b.className='tier'+(l.n===defLevel?' on':'');
+  b.innerHTML = '<div class="no">'+l.n+'</div><div class="t"><strong>'+l.name+'</strong><small>'+l.desc+'</small></div>'
+    + '<div class="p">+'+l.add+'<em>元/坪</em><em style="display:block;margin:0;text-align:right">損耗 '+wasteOf(l.n)+'%</em></div>';
+  b.onclick = () => {
+    defLevel=l.n; [...$('tiers').children].forEach(c=>c.classList.remove('on')); b.classList.add('on');
+    rowsEl.querySelectorAll('.lv').forEach(s=>s.value=l.n); calc();
+  };
+  $('tiers').appendChild(b);
+});
+
+/* 加項卡片 */
+function buildItem(def, host){
+  const d = document.createElement('div'); d.className='item'; d.dataset.k=def.k;
+  let rateTxt = def.lump ? '一式' : def.custom ? '' : (def.from?'':'')+fmt(def.price)+'<em>元/'+def.unit+(def.from?' 起':'')+'</em>';
+  let bd = '';
+  if (def.custom === 'remote') {
+    bd = fld('單程時數','remH','小時',1,'0.5') + fld('施工人數','remP','人',1,'1') + fld('趟數（單程計）','remT','趟',1,'2');
+  } else if (def.custom === 'lodge') {
+    bd = fld('人數','lodP','人',1,'1') + fld('天數','lodD','日',1,'1');
+  } else if (def.lump) {
+    bd = fld(def.qLab,'q','元',1,'');
+  } else {
+    bd = fld(def.qLab + (def.hint?'<small>'+def.hint+'</small>':''),'q',def.unit,def.unit==='坪'?0.01:1,'')
+       + fld('單價','p','元/'+def.unit,1,def.price);
+  }
+  d.innerHTML = '<div class="hd"><div class="cb"></div><div class="nm"><strong>'+def.name+'</strong>'+(def.sub?'<small>'+def.sub+'</small>':'')+'</div>'
+    + '<div class="rate">'+rateTxt+'</div><div class="amt num">0</div></div><div class="bd">'+bd+'</div>';
+  const st = { def, on:false, el:d, ins:{} };
+  d.querySelectorAll('input').forEach(i => { st.ins[i.dataset.f]=i; i.addEventListener('input', calc); });
+  d.querySelector('.hd').onclick = () => {
+    st.on = !st.on; d.classList.toggle('on', st.on);
+    if (st.on) {
+      if (def.autoPing && !st.ins.q.value) st.ins.q.value = totalPing() || '';
+      if (def.k==='sili' && !st.ins.q.value) st.ins.q.value = Math.round(val($('perim')))||'';
+      if (def.k==='start' && !st.ins.q.value) st.ins.q.value = Math.round(val($('rooms')))||'';
+      if (def.k==='div' && !st.ins.q.value) st.ins.q.value = Math.round(val($('doors')))||'';
+      const first = d.querySelector('.bd input'); if (first && !first.value) setTimeout(()=>first.focus(),50);
+    }
+    calc();
+  };
+  state[def.k] = st; host.appendChild(d);
+}
+function fld(label,f,unit,step,v){
+  return '<div class="f"><label>'+label+'</label><div class="in"><input class="n" data-f="'+f+'" type="number" inputmode="decimal" step="'+step+'" value="'+v+'"><u>'+unit+'</u></div></div>';
+}
+ADDONS.forEach(a=>buildItem(a,$('addons')));
+WORKS.forEach(a=>buildItem(a,$('works')));
+TRAVEL.forEach(a=>buildItem(a,$('travel')));
+function totalPing(){ return areas().reduce((s,a)=>s+a.ping,0); }
+
+/* 計算 */
+let LAST = null;
+function calc(){
+  const list = areas();
+  if(!$('perim').dataset.manual){ const ep=estPerim(); $('perim').value = ep>0?Math.round(ep):''; }
+  const ping = list.reduce((s,a)=>s+a.ping,0);
+  const th = THICK.find(t=>t.k===thick);
+  const lines = []; // {name, detail, amt, excl}
+  let base = 0;
+  list.forEach(a => {
+    const lv = LEVELS.find(l=>l.n===a.lv);
+    const u = th.price + lv.add, amt = a.ping*u;
+    base += amt;
+    lines.push({name:'鋪設・'+(a.name||'區域')+'（等級'+a.lv+'）', detail:f2(a.ping)+'坪 × '+u, amt});
+  });
+  Object.values(state).forEach(st => {
+    if (!st.on) return; const d = st.def; let amt=0, detail='';
+    if (d.custom==='remote'){ const h=val(st.ins.remH),p=val(st.ins.remP),t=val(st.ins.remT); amt=h*REMOTE_RATE*REMOTE_PCT*p*t; detail=h+'h×'+REMOTE_RATE+'×50%×'+p+'人×'+t+'趟'; }
+    else if (d.custom==='lodge'){ const p=val(st.ins.lodP),n=val(st.ins.lodD); amt=p*n*LODGE_RATE; detail=p+'人×'+n+'日×'+LODGE_RATE; }
+    else if (d.lump){ amt=val(st.ins.q); detail='一式'; }
+    else { const q=val(st.ins.q),p=val(st.ins.p); amt=q*p; detail=f2(q)+d.unit+' × '+fmt(p); if(d.min && amt>0 && amt<d.min){amt=d.min;detail+='（未達最低，以 '+fmt(d.min)+' 計）';} }
+    if (amt>0 || st.on) lines.push({name:d.name, detail, amt, excl:!!d.excludeMin});
+  });
+  const inMin = lines.filter(l=>!l.excl).reduce((s,l)=>s+l.amt,0);
+  const exMin = lines.filter(l=>l.excl).reduce((s,l)=>s+l.amt,0);
+  let minAdj = 0;
+  if (ping>0 && inMin>0 && inMin<MIN_LABOR) minAdj = MIN_LABOR-inMin;
+  const untaxed = inMin+minAdj+exMin;
+  const taxAmt = untaxed*tax/100, grand = untaxed+taxAmt;
+  LAST = {list,ping,th,lines,inMin,exMin,minAdj,untaxed,taxAmt,grand};
+  window.__w = null;
+
+  $('totalPing').textContent = f2(ping);
+  // result table
+  const r = $('res');
+  if (!lines.length){ r.innerHTML='<div class="empty">輸入坪數並選擇條件後，明細會顯示在這裡</div>'; }
+  else {
+    let h = lines.map(l=>'<div class="ln"><span>'+l.name+'<small>'+l.detail+'</small></span><b>'+fmt(l.amt)+'</b></div>').join('');
+    if (minAdj>0) h += '<div class="ln warn"><span>未達最低出工工資 '+fmt(MIN_LABOR)+'，補足差額</span><b>+'+fmt(minAdj)+'</b></div>';
+    h += '<div class="ln sub"><span>未稅小計</span><b>'+fmt(untaxed)+'</b></div>';
+    if (tax) h += '<div class="ln sub"><span>稅金 5%</span><b>'+fmt(taxAmt)+'</b></div>';
+    h += '<div class="ln tot"><span>代工費合計'+(tax?'（含稅）':'（未稅）')+'</span><b>NT$ '+fmt(grand)+'</b></div>';
+    r.innerHTML = h;
+  }
+  $('barLab').textContent = '代工費'+(tax?'（含稅）':'（未稅）');
+  $('grand').textContent = fmt(grand);
+  $('detail').textContent = ping>0 ? f2(ping)+' 坪・'+th.label+'・基礎 '+fmt(base)+(lines.length>list.length?'・加項 '+fmt(untaxed-base-minAdj):'')+(minAdj?'・補足最低出工':'') : '請輸入坪數';
+  Object.values(state).forEach(st=>{ const l=lines.find(x=>x.name===st.def.name); st.el.querySelector('.amt').textContent = l?fmt(l.amt):'0'; });
+  // material
+  const ex = val($('wasteExtra'));
+  const w = list.reduce((s,a)=>s + a.ping*(1+(wasteOf(a.lv)+ex)/100), 0);
+  const effW = ping>0 ? (w/ping-1)*100 : 0;
+  $('waste').value = ping>0 ? f2(effW) : '';
+  const per=val($('perBox')), mp=val($('matPrice')), tm=val($('tubeM')), pm=val($('perim'));
+  $('wastePing').textContent=f2(w);
+  $('boxes').textContent = per>0&&ping>0 ? Math.ceil(w/per) : '—';
+  $('tubes').textContent = tm>0&&pm>0 ? Math.ceil(pm/tm) : '—';
+  $('startN').textContent = ping>0 ? Math.round(val($('rooms'))) : '—';
+  $('divN').textContent = ping>0 ? Math.round(val($('doors'))) : '—';
+  $('matTotal').textContent = mp>0&&ping>0 ? fmt(ping*mp) : '—';
+}
+['matPrice','perBox','wasteExtra','tubeM'].forEach(id=>$(id).addEventListener('input',calc));
+
+/* 複製 */
+function buildText(){
+  const L = LAST; if (!L) return '';
+  const d=new Date(), date=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+  const o = [];
+  o.push('三川工方｜超固地板代工計價'); o.push(date);
+  const cn=$('caseName').value.trim(), ca=$('caseAddr').value.trim();
+  if (cn) o.push('案件　'+cn);
+  if (ca) o.push('地址　'+ca);
+  o.push('純施工・未稅・臺北市起算'); o.push('—');
+  o.push('厚度　'+L.th.label+'（基準 '+L.th.price+' 元/坪）');
+  L.list.forEach(a=>{ const lv=LEVELS.find(l=>l.n===a.lv); o.push((a.name||'區域')+'　'+f2(a.ping)+'坪　等級'+a.lv+'（+'+lv.add+'）　NT$ '+fmt(a.ping*(L.th.price+lv.add))); });
+  o.push('施作坪數　'+f2(L.ping)+' 坪');
+  const add = L.lines.slice(L.list.length);
+  if (add.length){ o.push('—'); add.forEach(l=>o.push(l.name+'　'+l.detail+'　NT$ '+fmt(l.amt))); }
+  if (L.minAdj>0) o.push('補足最低出工工資 '+fmt(MIN_LABOR)+'　+'+fmt(L.minAdj));
+  o.push('—');
+  o.push('未稅小計　NT$ '+fmt(L.untaxed));
+  if (tax){ o.push('稅金 5%　NT$ '+fmt(L.taxAmt)); o.push('含稅合計　NT$ '+fmt(L.grand)); }
+  else o.push('代工費合計（未稅）　NT$ '+fmt(L.grand));
+  const mp=val($('matPrice')),per=val($('perBox')),tm=val($('tubeM')),pm=val($('perim'));
+  if (L.ping>0){
+    o.push('—'); o.push('［材料備料參考・不計入代工費］');
+    const ex=val($('wasteExtra'));
+    const w=L.list.reduce((s,a)=>s+a.ping*(1+(wasteOf(a.lv)+ex)/100),0);
+    o.push('地板　含損耗（依等級 '+WASTE_BASE+'% 起每級 +'+WASTE_STEP+'%'+(ex?'，另加 '+ex+'%':'')+'）'+f2(w)+' 坪'+(per>0?' → 約 '+Math.ceil(w/per)+' 箱':''));
+    if (mp>0) o.push('料價 '+fmt(mp)+' 元/坪 → NT$ '+fmt(L.ping*mp));
+    if (pm>0) o.push('矽利康　收邊約 '+Math.round(pm)+' m'+(tm>0?' → 約 '+Math.ceil(pm/tm)+' 支':''));
+    o.push('起步條 約 '+Math.round(val($('rooms')))+' 處　分隔條 約 '+Math.round(val($('doors')))+' 處');
+  }
+  o.push('—'); o.push('材料由發包單位提供；搬工、清運、遠程、住宿另列不抵扣最低出工。');
+  return o.join('\n');
+}
+$('copyBtn').onclick = () => {
+  const txt=buildText(); if(!txt) return;
+  const ok=()=>{const b=$('copyBtn');b.textContent='已複製';b.classList.add('done');setTimeout(()=>{b.textContent='複製';b.classList.remove('done');},1600);};
+  if (navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(txt).then(ok).catch(()=>fb(txt,ok)); else fb(txt,ok);
+};
+$('shareBtn').onclick = async () => {
+  const txt=buildText(); if(!txt) return;
+  if (navigator.share) { try { await navigator.share({text:txt}); return; } catch(e){ if(e.name==='AbortError') return; } }
+  window.open('https://line.me/R/share?text='+encodeURIComponent(txt),'_blank');
+};
+function fb(t,ok){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){alert(t);}ta.remove();}
+$('resetBtn').onclick=()=>{ if(confirm('清空所有輸入？')) location.reload(); };
+
+addRow('全室','');
+calc();
+</script>
+</body>
+</html>
