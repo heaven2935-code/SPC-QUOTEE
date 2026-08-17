@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.7.0/style.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/chiron-sung-hk-webfont@1.011/ChironSungHK.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
   --paper:#f2f0eb; --ink:#23211d; --hair:#dcd7cd; --card:#f8f7f4;
@@ -594,12 +595,37 @@ function buildQuote(){
 $('previewBtn').onclick=()=>{ $('quote').innerHTML=buildQuote(); $('sheet').hidden=false; document.body.style.overflow='hidden'; $('sheet').scrollTop=0; };
 $('closeSheet').onclick=()=>{ $('sheet').hidden=true; document.body.style.overflow=''; };
 $('sheet').addEventListener('click',e=>{ if(e.target===$('sheet')) $('closeSheet').onclick(); });
-const doShare = async () => {
-  const txt=buildText(); if(!txt) return;
-  if (navigator.share) { try { await navigator.share({text:txt}); return; } catch(e){ if(e.name==='AbortError') return; } }
-  window.open('https://line.me/R/share?text='+encodeURIComponent(txt),'_blank');
+async function renderQuoteImage(){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;left:-10000px;top:0;width:560px;background:#f2f0eb;padding:28px 26px 26px;z-index:-1';
+  wrap.innerHTML='<div class="q">'+buildQuote()+'</div>';
+  document.body.appendChild(wrap);
+  await (document.fonts ? document.fonts.ready : Promise.resolve());
+  const canvas=await html2canvas(wrap,{scale:2,backgroundColor:'#f2f0eb',useCORS:true,logging:false});
+  wrap.remove();
+  return new Promise(res=>canvas.toBlob(b=>res(b),'image/png'));
+}
+function fileName(){ const cn=$('caseName').value.trim(); const d=new Date(); return '三川工方_超固地板代工報價_'+(cn||'未命名')+'_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.png'; }
+const doShare = async (btn) => {
+  if(!LAST||!LAST.list.length){ alert('請先輸入坪數'); return; }
+  const b=btn||$('shareBtn'); const old=b.textContent; b.textContent='產生中…'; b.disabled=true;
+  try{
+    const blob=await renderQuoteImage();
+    const file=new File([blob],fileName(),{type:'image/png'});
+    const cn=$('caseName').value.trim();
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:'超固地板代工報價',text:'三川工方｜超固地板代工報價'+(cn?'・'+cn:'')}); }
+      catch(e){ if(e.name!=='AbortError') throw e; }
+    } else {
+      // 不支援分享檔案：開新分頁顯示圖片，長按可存到相簿再傳 LINE
+      const url=URL.createObjectURL(blob); const w=window.open(url,'_blank');
+      if(!w){ const a=document.createElement('a'); a.href=url; a.download=fileName(); a.click(); }
+      alert('此瀏覽器不支援直接分享檔案，已開啟報價單圖片，長按儲存後即可傳送到 LINE。');
+    }
+  }catch(e){ console.error(e); alert('產生圖片失敗：'+e.message); }
+  b.textContent=old; b.disabled=false;
 };
-$('shareBtn').onclick=doShare; $('shareBtn2').onclick=doShare;
+$('shareBtn').onclick=()=>doShare($('shareBtn')); $('shareBtn2').onclick=()=>doShare($('shareBtn2'));
 function fb(t,ok){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){alert(t);}ta.remove();}
 $('resetBtn').onclick=()=>{ if(confirm('清空所有輸入？')) location.reload(); };
 
