@@ -631,6 +631,7 @@ let qrMade=false;
 function openQr(){
   if(!qrMade){ new QRCode($('qrBox'),{text:APP_URL,width:220,height:220,colorDark:'#23211d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); $('qrUrl').textContent=APP_URL; qrMade=true; }
   $('qrSheet').hidden=false; document.body.style.overflow='hidden';
+  if(!qrFile) setTimeout(async()=>{ try{ qrFile=await makeQrFile(); }catch(e){} },150);
 }
 $('qrBtn').onclick=openQr;
 $('qrClose').onclick=()=>{ $('qrSheet').hidden=true; document.body.style.overflow=''; };
@@ -641,25 +642,36 @@ $('qrLine').onclick=()=>{
   // 直接開 LINE 選擇分享對象
   window.location.href='https://line.me/R/share?text='+encodeURIComponent(text);
 };
+let qrFile=null;
+async function makeQrFile(){
+  const src=$('qrBox').querySelector('canvas')||$('qrBox').querySelector('img');
+  if(!src) return null;
+  if(src.tagName==='IMG' && !src.complete) await new Promise(r=>{src.onload=r;src.onerror=r;});
+  const c=document.createElement('canvas'); c.width=560; c.height=700; const x=c.getContext('2d');
+  x.fillStyle='#f2f0eb'; x.fillRect(0,0,c.width,c.height);
+  x.fillStyle='#fff'; x.fillRect(80,60,400,400); x.drawImage(src,110,90,340,340);
+  x.fillStyle='#26241f'; x.font='600 22px "Noto Serif TC","LXGW WenKai TC",serif'; x.textAlign='center'; x.fillText('超固｜SPC 卡扣式地板｜快速試算', 280, 520);
+  x.fillStyle='#5a3b32'; x.font='16px Outfit,sans-serif'; x.fillText(APP_URL,280,560);
+  x.fillStyle='#a09789'; x.font='14px "LXGW WenKai TC",sans-serif'; x.fillText('三川工方',280,610);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  return new File([blob],'超固地板快速試算_QR.png',{type:'image/png'});
+}
 $('qrShare').onclick=async()=>{
-  const b=$('qrShare'); const old=b.textContent; b.textContent='產生中…'; b.disabled=true;
+  const b=$('qrShare'); const old=(b.dataset.label||=b.textContent);
+  const text='超固 SPC 卡扣式地板快速試算｜三川工方\n'+APP_URL;
   try{
-    // 產生附網址文字的 QR 圖
-    const src=$('qrBox').querySelector('canvas')||$('qrBox').querySelector('img');
-    const c=document.createElement('canvas'); c.width=560; c.height=700; const x=c.getContext('2d');
-    x.fillStyle='#f2f0eb'; x.fillRect(0,0,c.width,c.height);
-    x.fillStyle='#fff'; x.fillRect(80,60,400,400); x.drawImage(src,110,90,340,340);
-    x.fillStyle='#7a574a'; x.font='700 22px "LXGW WenKai TC",sans-serif'; x.textAlign='center'; x.fillText('超固 SPC 卡扣式地板  快速試算', 280, 520);
-    x.fillStyle='#5a3b32'; x.font='16px Outfit,sans-serif'; x.fillText(APP_URL,280,560);
-    x.fillStyle='#a09789'; x.font='14px "LXGW WenKai TC",sans-serif'; x.fillText('三川工方',280,610);
-    const blob=await new Promise(r=>c.toBlob(r,'image/png'));
-    const file=new File([blob],'超固地板快速試算_QR.png',{type:'image/png'});
-    const text='超固 SPC 卡扣式地板快速試算｜三川工方\n'+APP_URL;
-    if(navigator.canShare&&navigator.canShare({files:[file]})){ try{ await navigator.share({files:[file],text}); }catch(e){ if(e.name!=='AbortError') throw e; } }
-    else if(navigator.share){ try{ await navigator.share({text,url:APP_URL}); }catch(e){ if(e.name!=='AbortError') throw e; } }
-    else { const url=URL.createObjectURL(blob); window.open(url,'_blank'); }
-  }catch(e){ alert('分享失敗：'+e.message); }
-  b.textContent=old; b.disabled=false;
+    if(!qrFile){ b.textContent='產生中…'; qrFile=await makeQrFile(); }
+    if(qrFile && navigator.canShare && navigator.canShare({files:[qrFile]})){
+      try{ await navigator.share({files:[qrFile],text}); b.textContent=old; }
+      catch(e){ if(e.name==='AbortError') b.textContent=old; else if(e.name==='NotAllowedError'||e.name==='InvalidStateError') b.textContent='已就緒・再按一次'; else throw e; }
+    } else if(navigator.share){
+      try{ await navigator.share({text,url:APP_URL}); }catch(e){ if(e.name!=='AbortError') throw e; }
+      b.textContent=old;
+    } else {
+      b.textContent=old;
+      if(qrFile){ window.open(URL.createObjectURL(qrFile),'_blank'); } else alert('此瀏覽器不支援分享。');
+    }
+  }catch(e){ b.textContent=old; alert('分享失敗：'+e.message); }
 };
 $('previewBtn').onclick=()=>{ $('quote').innerHTML=buildQuote(); $('sheet').hidden=false; document.body.style.overflow='hidden'; $('sheet').scrollTop=0; };
 $('closeSheet').onclick=()=>{ $('sheet').hidden=true; document.body.style.overflow=''; };
@@ -675,24 +687,43 @@ async function renderQuoteImage(){
   return new Promise(res=>canvas.toBlob(b=>res(b),'image/png'));
 }
 function fileName(){ const cn=$('caseName').value.trim(); const d=new Date(); return '三川工方_超固地板代工報價_'+(cn||'未命名')+'_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.png'; }
+let shareCache={key:null,file:null};
+function shareKey(){ return buildText()+'|'+tax; }
+async function shareFile(file,btn,old){
+  const cn=$('caseName').value.trim();
+  try{
+    await navigator.share({files:[file],title:'超固地板代工報價',text:'三川工方｜超固地板代工報價'+(cn?'・'+cn:'')});
+    btn.textContent=old; return true;
+  }catch(e){
+    if(e.name==='AbortError'){ btn.textContent=old; return true; }
+    if(e.name==='NotAllowedError'||e.name==='InvalidStateError'){ btn.textContent='已就緒・再按一次'; return false; }
+    throw e;
+  }
+}
 const doShare = async (btn) => {
   if(!LAST||!LAST.list.length){ alert('請先輸入坪數'); return; }
-  const b=btn||$('shareBtn'); const old=b.textContent; b.textContent='產生中…'; b.disabled=true;
+  const old=(btn.dataset.label||=btn.textContent);
+  const supportsFiles = !!(navigator.canShare && navigator.share);
   try{
+    const key=shareKey();
+    if(shareCache.file && shareCache.key===key && supportsFiles && navigator.canShare({files:[shareCache.file]})){
+      // 圖已就緒：同步呼叫分享（不經 await，保留點擊授權）
+      await shareFile(shareCache.file,btn,old); return;
+    }
+    btn.textContent='產生中…'; btn.disabled=true;
     const blob=await renderQuoteImage();
     const file=new File([blob],fileName(),{type:'image/png'});
-    const cn=$('caseName').value.trim();
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file],title:'超固地板代工報價',text:'三川工方｜超固地板代工報價'+(cn?'・'+cn:'')}); }
-      catch(e){ if(e.name!=='AbortError') throw e; }
+    shareCache={key,file};
+    btn.disabled=false;
+    if(supportsFiles && navigator.canShare({files:[file]})){
+      await shareFile(file,btn,old);
     } else {
-      // 不支援分享檔案：開新分頁顯示圖片，長按可存到相簿再傳 LINE
       const url=URL.createObjectURL(blob); const w=window.open(url,'_blank');
       if(!w){ const a=document.createElement('a'); a.href=url; a.download=fileName(); a.click(); }
+      btn.textContent=old;
       alert('此瀏覽器不支援直接分享檔案，已開啟報價單圖片，長按儲存後即可傳送到 LINE。');
     }
-  }catch(e){ console.error(e); alert('產生圖片失敗：'+e.message); }
-  b.textContent=old; b.disabled=false;
+  }catch(e){ console.error(e); btn.textContent=old; btn.disabled=false; alert('分享失敗：'+e.message); }
 };
 $('shareBtn').onclick=()=>doShare($('shareBtn')); $('shareBtn2').onclick=()=>doShare($('shareBtn2'));
 function fb(t,ok){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){alert(t);}ta.remove();}
