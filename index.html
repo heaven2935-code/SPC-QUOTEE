@@ -157,7 +157,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .pill.sq{flex:0 0 52px;padding:10px 0;display:flex;align-items:center;justify-content:center}
 .qr-card{max-width:340px;margin:12vh auto 0;background:var(--paper);border-radius:10px;padding:26px 22px 20px;text-align:center}
 .qr-t{font-size:13px;letter-spacing:.24em;color:var(--sub);font-weight:700;margin-bottom:16px}
-#qrBox{display:inline-block;padding:12px;background:#fff;border:1px solid var(--hair)}
+#qrBox{display:inline-block;padding:14px;background:#fff;border:1px solid var(--hair)}
+#qrBox canvas{width:220px;height:220px}
 #qrBox img,#qrBox canvas{display:block}
 .qr-u{margin-top:14px;font-family:"Outfit",sans-serif;font-size:12.5px;color:var(--body);word-break:break-all;letter-spacing:.02em}
 .qr-acts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
@@ -311,7 +312,7 @@ footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-
 <div class="sheet" id="qrSheet" hidden>
   <div class="qr-card">
     <div class="qr-t">掃描開啟計價工具</div>
-    <div id="qrBox"></div>
+    <div id="qrBox"></div><div id="qrGen" style="display:none"></div>
     <div class="qr-u" id="qrUrl"></div>
     <div class="qr-acts">
       <button class="pill" id="qrShare">分享 QR 與網址</button>
@@ -626,9 +627,34 @@ function buildQuote(){
   return h;
 }
 const APP_URL='https://heaven2935-code.github.io/SPC-QUOTEE/';
-let qrMade=false;
+let qrMade=false, qrModel=null, qrFile=null;
+function rr(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+/* 品牌風格 QR：圓角模組、圓角定位框、墨色 */
+function drawQR(ctx,ox,oy,size,color){
+  const n=qrModel.getModuleCount(), cell=size/n;
+  const inFinder=(r,c)=> (r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+  ctx.fillStyle=color;
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    if(!qrModel.isDark(r,c)||inFinder(r,c)) continue;
+    const g=cell*0.06; rr(ctx,ox+c*cell+g,oy+r*cell+g,cell-2*g,cell-2*g,cell*0.32); ctx.fill();
+  }
+  const finder=(r,c)=>{
+    const X=ox+c*cell,Y=oy+r*cell,S=cell*7;
+    ctx.fillStyle=color; rr(ctx,X,Y,S,S,S*0.28); ctx.fill();
+    ctx.fillStyle='#fff'; rr(ctx,X+cell,Y+cell,S-2*cell,S-2*cell,S*0.18); ctx.fill();
+    ctx.fillStyle=color; rr(ctx,X+2*cell,Y+2*cell,S-4*cell,S-4*cell,S*0.12); ctx.fill();
+  };
+  finder(0,0); finder(0,n-7); finder(n-7,0);
+}
 function openQr(){
-  if(!qrMade){ new QRCode($('qrBox'),{text:APP_URL,width:220,height:220,colorDark:'#23211d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); $('qrUrl').textContent=APP_URL; qrMade=true; }
+  if(!qrMade){
+    const q=new QRCode($('qrGen'),{text:APP_URL,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
+    qrModel=q._oQRCode;
+    const c=document.createElement('canvas'); c.width=440; c.height=440; const x=c.getContext('2d');
+    x.fillStyle='#fff'; x.fillRect(0,0,440,440); drawQR(x,0,0,440,'#26241f');
+    $('qrBox').appendChild(c);
+    $('qrUrl').textContent=APP_URL; qrMade=true;
+  }
   $('qrSheet').hidden=false; document.body.style.overflow='hidden';
   if(!qrFile) setTimeout(async()=>{ try{ qrFile=await makeQrFile(); }catch(e){} },150);
 }
@@ -636,6 +662,31 @@ $('qrBtn').onclick=openQr;
 $('qrClose').onclick=()=>{ $('qrSheet').hidden=true; document.body.style.overflow=''; };
 $('qrSheet').addEventListener('click',e=>{ if(e.target===$('qrSheet')) $('qrClose').onclick(); });
 $('qrCopy').onclick=()=>{ const b=$('qrCopy'); const ok=()=>{b.textContent='已複製';b.classList.add('done');setTimeout(()=>{b.textContent='複製網址';b.classList.remove('done');},1600);}; if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(APP_URL).then(ok).catch(()=>fb(APP_URL,ok)); else fb(APP_URL,ok); };
+/* 分享用的完整版面：紙感底、抬頭、QR 卡、網址 */
+async function makeQrFile(){
+  if(!qrModel) return null;
+  if(document.fonts){ try{ await Promise.all([document.fonts.load('600 40px "Noto Serif TC"'),document.fonts.load('400 30px Outfit'),document.fonts.load('700 30px "LXGW WenKai TC"')]); }catch(e){} }
+  const W=900,H=1240; const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  x.fillStyle='#f2f0eb'; x.fillRect(0,0,W,H);
+  x.textAlign='center'; x.textBaseline='alphabetic';
+  // 落款
+  x.fillStyle='#7a574a'; x.font='700 26px "LXGW WenKai TC","Noto Serif TC",serif'; x.fillText('三　川　工　方',W/2,96);
+  x.fillStyle='#a09789'; x.font='300 15px Outfit,sans-serif'; x.fillText('S A N C H U A N   C O N S T R U C T I O N',W/2,124);
+  x.strokeStyle='#dcd7cd'; x.lineWidth=1; x.beginPath(); x.moveTo(140,150); x.lineTo(W-140,150); x.stroke();
+  // QR 卡
+  const cardS=640, cx=(W-cardS)/2, cy=196;
+  x.fillStyle='#ffffff'; rr(x,cx,cy,cardS,cardS,10); x.fill(); x.strokeStyle='#dcd7cd'; x.stroke();
+  drawQR(x,cx+56,cy+56,cardS-112,'#26241f');
+  // 標題
+  const ty=cy+cardS+86; x.fillStyle='#26241f'; x.font='600 38px "Noto Serif TC","Chiron Sung HK",serif';
+  x.fillText('超固 ｜ SPC 卡扣式地板 ｜ 快速試算',W/2,ty);
+  x.fillStyle='#96503a'; x.font='400 24px Outfit,sans-serif'; x.fillText(APP_URL,W/2,ty+52);
+  x.strokeStyle='#dcd7cd'; x.beginPath(); x.moveTo(300,ty+90); x.lineTo(W-300,ty+90); x.stroke();
+  x.fillStyle='#7a574a'; x.font='400 20px "LXGW WenKai TC",sans-serif'; x.fillText('手機相機掃描，或點擊網址開啟',W/2,ty+130);
+  x.fillStyle='#a09789'; x.font='300 15px Outfit,sans-serif'; x.fillText('RIGID CORE CLICK-LOCK  ·  QUICK ESTIMATE',W/2,ty+162);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  return new File([blob],'超固地板快速試算_QR.png',{type:'image/png'});
+}
 $('qrShare').onclick=async()=>{
   const b=$('qrShare'); const old=(b.dataset.label||=b.textContent);
   const text='超固 SPC 卡扣式地板快速試算｜三川工方\n'+APP_URL;
