@@ -155,13 +155,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .pill:active{background:#d3cdc1}
 .pill.done{background:var(--green);color:#f3f6f2;border-color:var(--green)}
 .pill.sq{flex:0 0 52px;padding:10px 0;display:flex;align-items:center;justify-content:center}
-.qr-card{max-width:340px;margin:12vh auto 0;background:var(--paper);border-radius:10px;padding:26px 22px 20px;text-align:center}
+.qr-card{max-width:400px;margin:6vh auto 0;background:var(--paper);border-radius:10px;padding:14px 14px 16px;text-align:center}
 .qr-t{font-size:13px;letter-spacing:.24em;color:var(--sub);font-weight:700;margin-bottom:16px}
-#qrBox{display:inline-block;padding:14px;background:#fff;border:1px solid var(--hair)}
-#qrBox canvas{width:220px;height:220px}
+#qrBox{position:relative;border:1px solid var(--hair);background:#f2f0eb;min-height:200px}
+#qrBox img{width:100%;height:auto;display:block}
+.qr-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mute);letter-spacing:.2em}
 #qrBox img,#qrBox canvas{display:block}
 .qr-u{margin-top:14px;font-family:"Outfit",sans-serif;font-size:12.5px;color:var(--body);word-break:break-all;letter-spacing:.02em}
-.qr-acts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.qr-acts{display:flex;gap:8px;margin-top:12px}
 /* 報價單 sheet */
 .sheet{position:fixed;inset:0;background:rgba(35,33,29,.55);z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sheet[hidden]{display:none}
@@ -311,11 +312,9 @@ footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-
 <!-- QR 碼 -->
 <div class="sheet" id="qrSheet" hidden>
   <div class="qr-card">
-    <div class="qr-t">掃描開啟計價工具</div>
-    <div id="qrBox"></div><div id="qrGen" style="display:none"></div>
-    <div class="qr-u" id="qrUrl"></div>
+    <div id="qrBox"><img id="qrImg" alt="QR" hidden><div class="qr-wait" id="qrWait">產生中…</div></div><div id="qrGen" style="display:none"></div>
     <div class="qr-acts">
-      <button class="pill" id="qrShare">分享 QR 與網址</button>
+      <button class="pill" id="qrShare">分享</button>
       <button class="pill" id="qrCopy">複製網址</button>
       <button class="pill" id="qrClose">關閉</button>
     </div>
@@ -647,16 +646,13 @@ function drawQR(ctx,ox,oy,size,color){
   finder(0,0); finder(0,n-7); finder(n-7,0);
 }
 function openQr(){
-  if(!qrMade){
-    const q=new QRCode($('qrGen'),{text:APP_URL,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
-    qrModel=q._oQRCode;
-    const c=document.createElement('canvas'); c.width=440; c.height=440; const x=c.getContext('2d');
-    x.fillStyle='#fff'; x.fillRect(0,0,440,440); drawQR(x,0,0,440,'#26241f');
-    $('qrBox').appendChild(c);
-    $('qrUrl').textContent=APP_URL; qrMade=true;
-  }
   $('qrSheet').hidden=false; document.body.style.overflow='hidden';
-  if(!qrFile) setTimeout(async()=>{ try{ qrFile=await makeQrFile(); }catch(e){} },150);
+  if(!qrModel){ const q=new QRCode($('qrGen'),{text:APP_URL,width:200,height:200,correctLevel:QRCode.CorrectLevel.M}); qrModel=q._oQRCode; }
+  if(qrFile) return;
+  (async()=>{ try{
+    const r=await makeQrFile(); qrFile=r.file;
+    $('qrImg').src=r.dataUrl; $('qrImg').hidden=false; $('qrWait').hidden=true;
+  }catch(e){ $('qrWait').textContent='產生失敗：'+e.message; } })();
 }
 $('qrBtn').onclick=openQr;
 $('qrClose').onclick=()=>{ $('qrSheet').hidden=true; document.body.style.overflow=''; };
@@ -685,13 +681,13 @@ async function makeQrFile(){
   x.fillStyle='#7a574a'; x.font='400 20px "LXGW WenKai TC",sans-serif'; x.fillText('手機相機掃描，或點擊網址開啟',W/2,ty+130);
   x.fillStyle='#a09789'; x.font='300 15px Outfit,sans-serif'; x.fillText('RIGID CORE CLICK-LOCK  ·  QUICK ESTIMATE',W/2,ty+162);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));
-  return new File([blob],'超固地板快速試算_QR.png',{type:'image/png'});
+  return {file:new File([blob],'超固地板快速試算_QR.png',{type:'image/png'}), dataUrl:c.toDataURL('image/png')};
 }
 $('qrShare').onclick=async()=>{
   const b=$('qrShare'); const old=(b.dataset.label||=b.textContent);
   const text='超固 SPC 卡扣式地板快速試算｜三川工方\n'+APP_URL;
   try{
-    if(!qrFile){ b.textContent='產生中…'; qrFile=await makeQrFile(); }
+    if(!qrFile){ b.textContent='產生中…'; qrFile=(await makeQrFile()).file; }
     if(qrFile && navigator.canShare && navigator.canShare({files:[qrFile]})){
       try{ await navigator.share({files:[qrFile],text}); b.textContent=old; }
       catch(e){ if(e.name==='AbortError') b.textContent=old; else if(e.name==='NotAllowedError'||e.name==='InvalidStateError') b.textContent='已就緒・再按一次'; else throw e; }
