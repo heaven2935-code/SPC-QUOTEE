@@ -27,9 +27,11 @@ body{background:var(--paper);color:var(--ink);font-family:"LXGW WenKai TC","霞�
 .wrap{max-width:560px;margin:0 auto;padding:0 20px}
 header{padding:34px 0 22px;text-align:center}
 header h1.lock{margin:0;display:flex;align-items:baseline;justify-content:center;gap:0;font-weight:600;line-height:1;flex-wrap:wrap;font-family:"Noto Serif TC","Chiron Sung HK",serif;color:#26241f}
-header .mark{font-size:21px;letter-spacing:.16em;margin-right:22px;display:inline-block}
+header .mark{font-size:21px;letter-spacing:.16em;display:inline-block}
 header .tt{font-size:19px;letter-spacing:.2em;white-space:nowrap}
-header .tt em{font-style:normal;margin-left:18px}
+header .tt em{font-style:normal}
+header .sep{display:inline-block;width:1px;height:17px;background:#26241f;opacity:.55;margin:0 14px 0 8px;vertical-align:-2px}
+header .tt .sep{margin:0 12px 0 6px;height:15px}
 header .rule{height:1px;background:var(--hair);margin:18px 0 14px}
 header .sign{font-family:"Chiron Sung HK","LXGW WenKai TC",serif;font-weight:900;font-size:17px;letter-spacing:.34em;text-indent:.34em;transform:scaleY(.9);display:inline-block;color:var(--sub)}
 header .en{display:block;margin-top:9px;font-family:"Outfit",sans-serif;font-weight:300;font-size:10px;letter-spacing:.34em;text-indent:.34em;color:var(--mute);text-transform:uppercase}
@@ -167,9 +169,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .sheet-acts .pill{max-width:180px;margin:0 auto}
 .q .h{text-align:center;padding-bottom:16px}
 .q .h h2.lock{margin:0;display:flex;align-items:baseline;justify-content:center;gap:0;font-weight:600;line-height:1;flex-wrap:wrap;font-family:"Noto Serif TC","Chiron Sung HK",serif;color:#26241f}
-.q .h .mark{font-size:19px;letter-spacing:.16em;margin-right:18px;display:inline-block}
+.q .h .mark{font-size:19px;letter-spacing:.16em;display:inline-block}
 .q .h .tt{font-size:17px;letter-spacing:.18em;white-space:nowrap}
-.q .h .tt em{font-style:normal;margin-left:16px}
+.q .h .tt em{font-style:normal}
+.q .h .sep{display:inline-block;width:1px;height:15px;background:#26241f;opacity:.55;margin:0 12px 0 7px;vertical-align:-2px}
+.q .h .tt .sep{margin:0 10px 0 5px;height:13px}
 .q .h .rule{height:1px;background:var(--hair);margin:12px 0 10px}
 .q .h .sign{font-family:"Chiron Sung HK","LXGW WenKai TC",serif;font-weight:900;font-size:16px;letter-spacing:.34em;text-indent:.34em;transform:scaleY(.9);display:inline-block;color:var(--sub)}
 .q .h .en{display:block;margin-top:7px;font-family:"Outfit",sans-serif;font-weight:300;font-size:9.5px;letter-spacing:.32em;text-indent:.32em;color:var(--mute);text-transform:uppercase}
@@ -201,7 +205,7 @@ footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-
 <body>
 <div class="wrap">
   <header>
-    <h1 class="lock"><span class="mark">超固</span><span class="tt">SPC 卡扣式地板<em>快速試算</em></span></h1>
+    <h1 class="lock"><span class="mark">超固</span><i class="sep"></i><span class="tt">SPC 卡扣式地板<i class="sep"></i><em>快速試算</em></span></h1>
     <div class="rule"></div>
     <div class="sign">三川工方</div>
     <span class="en">Rigid Core Click-Lock · Quick Estimate</span>
@@ -596,7 +600,7 @@ function esc(t){return String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>
 function buildQuote(){
   const L=LAST; const d=new Date(), date=d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0');
   const cn=$('caseName').value.trim(), ca=$('caseAddr').value.trim();
-  let h='<div class="h"><h2 class="lock"><span class="mark">超固</span><span class="tt">SPC 卡扣式地板<em>代工報價單</em></span></h2><div class="rule"></div><div class="sign">三川工方</div><span class="en">Rigid Core Click-Lock · Contract Labour Quotation</span></div>';
+  let h='<div class="h"><h2 class="lock"><span class="mark">超固</span><i class="sep"></i><span class="tt">SPC 卡扣式地板<i class="sep"></i><em>代工報價單</em></span></h2><div class="rule"></div><div class="sign">三川工方</div><span class="en">Rigid Core Click-Lock · Contract Labour Quotation</span></div>';
   h+='<div class="meta"><span>案件</span><b>'+esc(cn||'—')+'</b><span>地址</span><b>'+esc(ca||'—')+'</b><span>發包單位</span><b>合富國際股份有限公司</b><span>報價日期</span><b>'+date+'</b><span>地板厚度</span><b>'+L.th.label+'（基準 '+L.th.price+' 元/坪）</b></div>';
   if(!L.list.length){ h+='<p style="text-align:center;color:var(--mute);font-size:13px;padding:30px 0">尚未輸入坪數</p>'; return h; }
   h+='<div class="sec">基礎鋪設</div><table>';
