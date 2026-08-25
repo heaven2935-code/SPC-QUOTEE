@@ -267,6 +267,11 @@ footer{padding:8px 0 20px;text-align:center;font-size:11px;color:#b0a89a;letter-
   </section>
 
   <section>
+    <div class="lab"><b>保護工程</b><i></i><s>Protection</s></div>
+    <div class="items" id="protect"></div>
+  </section>
+
+  <section>
     <div class="lab"><b>跨縣市施工</b><i></i><s>Travel</s></div>
     <div class="items" id="travel"></div>
   </section>
@@ -377,6 +382,12 @@ const WORKS = [
   {k:'ply',  name:'夾板全面平鋪', sub:'夾板及固定材由發包方供',               unit:'坪', qLab:'施作坪數', autoPing:true, price:800,  from:true},
   {k:'raise',name:'架高地板',     sub:'完成面 20cm 內；角材夾板五金由發包方供',unit:'坪', qLab:'施作坪數', autoPing:true, price:3200, from:true},
   {k:'clean',name:'施工餘料清運', sub:'最低 2,500／案；舊地板拆除另計',        unit:'坪', qLab:'施作坪數', autoPing:true, price:120,  from:true, excludeMin:true, min:CLEAN_MIN}
+];
+const PROTECT = [
+  {k:'pp',   name:'PP 地面保護',        sub:'PP 瓦楞板鋪設保護',              unit:'坪', qLab:'施作坪數', autoPing:true, price:200},
+  {k:'ppply',name:'PP＋1.8mm 夾板保護', sub:'標準地坪保護工程',              unit:'坪', qLab:'施作坪數', autoPing:true, price:500},
+  {k:'lift', name:'電梯保護',            sub:'轎廂與門框包覆',                unit:'台', qLab:'電梯數',   price:6000},
+  {k:'dust', name:'防塵膜',              sub:'施工區隔離防塵',                unit:'處', qLab:'處數',     price:1800}
 ];
 const TRAVEL = [
   {k:'remote', name:'遠程津貼', sub:'單程時數 × 500 × 50% × 人數 × 趟數', custom:'remote', excludeMin:true},
@@ -497,6 +508,7 @@ function fld(label,f,unit,step,v){
 }
 ADDONS.forEach(a=>buildItem(a,$('addons')));
 WORKS.forEach(a=>buildItem(a,$('works')));
+PROTECT.forEach(a=>buildItem(a,$('protect')));
 TRAVEL.forEach(a=>buildItem(a,$('travel')));
 function totalPing(){ return areas().reduce((s,a)=>s+a.ping,0); }
 
